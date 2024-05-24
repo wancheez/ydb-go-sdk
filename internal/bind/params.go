@@ -3,6 +3,7 @@ package bind
 import (
 	"database/sql"
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -124,6 +125,8 @@ func toValue(v interface{}) (_ types.Value, err error) {
 		return types.IntervalValueFromDuration(x), nil
 	case *time.Duration:
 		return types.NullableIntervalValueFromDuration(x), nil
+	case json.RawMessage:
+		return types.JSONValueFromBytes(x), nil
 	default:
 		return nil, xerrors.WithStackTrace(
 			fmt.Errorf("%T: %w. Create issue for support new type %s",
